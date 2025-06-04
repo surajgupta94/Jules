@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UK Property Price Finder</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <h1>UK Property Price Finder</h1>
+
+    <div id="filters">
+        <div>
+            <label for="location">Location (e.g., England, Scotland, East Midlands):</label>
+            <input type="text" id="location" name="location" value="england">
+        </div>
+        <div>
+            <label for="property_type">Property Type:</label>
+            <select id="property_type" name="property_type">
+                <option value="all">All Property Types</option>
+                <option value="detached">Detached</option>
+                <option value="semi-detached">Semi-Detached</option>
+                <option value="terraced">Terraced</option>
+                <option value="flat-maisonette">Flat/Maisonette</option>
+            </select>
+        </div>
+        <div>
+            <label for="min_price">Min Price (£):</label>
+            <input type="number" id="min_price" name="min_price" placeholder="e.g., 50000">
+        </div>
+        <div>
+            <label for="max_price">Max Price (£):</label>
+            <input type="number" id="max_price" name="max_price" placeholder="e.g., 300000">
+        </div>
+        <button id="search_button">Search</button>
+        <div id="loading_message" style="display: none; margin-top: 10px; color: blue;">Loading...</div>
+    </div>
+
+    <div id="results_area">
+        <h2>Results</h2>
+        <div id="error_message" style="color: red; margin-bottom: 10px;"></div>
+        <p><strong>Location:</strong> <span id="res_location">N/A</span></p>
+        <p><strong>Property Type:</strong> <span id="res_property_type">N/A</span></p>
+        <p><strong>Average Price:</strong> <span id="res_avg_price">N/A</span></p>
+        <p><strong>Data Period:</strong> <span id="res_data_period">N/A</span></p>
+        <p><small><em>Price filters (Min/Max Price) are not yet implemented in the backend for HMLR data. They are included here for future enhancements. The backend currently fetches regional averages.</em></small></p>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>
