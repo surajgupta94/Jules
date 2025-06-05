@@ -1,55 +1,154 @@
+html {
+    box-sizing: border-box;
+}
+
+*, *::before, *::after {
+    box-sizing: inherit;
+}
+
 body {
-    font-family: sans-serif;
-    margin: 20px;
-    background-color: #f4f4f4;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    padding: 20px; /* Changed from margin */
+    margin: 0; /* Changed from 20px */
+    background-color: #f8f9fa;
     color: #333;
 }
 
 h1 {
-    color: #333;
+    color: #2c3e50;
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+#filters {
+    max-width: 500px; /* Centering the whole filters block */
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 30px; /* Space below the filters block */
 }
 
 #filters > div {
-    margin-bottom: 10px;
+    margin-bottom: 20px; /* Spacing between filter rows */
+    /* max-width: 400px; /* Removed to allow inputs to use 100% of #filters width */
 }
 
 #filters label {
-    display: inline-block;
-    width: 200px; /* Adjust as needed */
-    margin-right: 10px;
+    display: block; /* Labels on their own line */
+    width: auto; /* Allow full width */
+    margin-bottom: 5px; /* Space below label */
 }
 
 #filters input[type="text"],
 #filters input[type="number"],
 #filters select {
-    padding: 8px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    width: 250px; /* Adjust as needed */
+    padding: 10px 12px; /* More spacious padding */
+    border: 1px solid #ced4da; /* Standard border color */
+    border-radius: 6px; /* Softer corners */
+    width: 100%; /* Responsive width within parent */
+    font-size: 1rem; /* Common font size */
+    transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out; /* Smooth transitions */
+    /* box-sizing: border-box; is inherited */
+}
+
+#filters input[type="text"]:focus,
+#filters input[type="number"]:focus,
+#filters select:focus {
+    border-color: #80bdff; /* Example focus border color */
+    outline: 0;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25); /* Focus shadow */
 }
 
 #filters button {
-    padding: 10px 15px;
-    background-color: #007bff;
+    padding: 12px 20px; /* More prominent button */
+    background-color: #0056b3; /* New background color */
     color: white;
     border: none;
-    border-radius: 4px;
+    border-radius: 6px; /* Softer corners */
     cursor: pointer;
-    margin-top: 10px;
+    margin-top: 10px; /* Space above the button, within its filter div */
+    display: block; /* Make button block to allow width adjustments or centering if needed */
+    width: 100%; /* Make button take full width of its container */
+    max-width: 200px; /* Example: constrain button width */
+    margin-left: auto; /* Center button if it has max-width */
+    margin-right: auto; /* Center button if it has max-width */
+    transition: background-color .15s ease-in-out; /* Smooth transition */
 }
 
 #filters button:hover {
-    background-color: #0056b3;
+    background-color: #004085; /* Darker hover effect */
 }
 
 #results_area {
-    margin-top: 20px;
-    padding: 15px;
-    background-color: #fff;
-    border: 1px solid #ddd;
-    border-radius: 4px;
+    margin-top: 30px; /* Increased separation */
+    padding: 20px 25px; /* More spacious padding */
+    background-color: #ffffff; /* Explicit white */
+    border: 1px solid #dee2e6; /* Updated border color */
+    border-radius: 8px; /* Softer corners */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05); /* Subtle depth */
+    max-width: 700px; /* Example: constrain results area width */
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#results_area h2 {
+    color: #343a40; /* Dark gray for heading */
+    margin-top: 0; /* Remove default top margin */
+    margin-bottom: 20px; /* Space below heading */
+    font-size: 1.75rem; /* Heading font size */
+}
+
+#results_area p {
+    font-size: 1.1rem; /* Improved readability */
+    line-height: 1.6; /* Spacing within paragraph */
+    color: #495057; /* Softer dark gray for text */
+    margin-bottom: 10px; /* Space below paragraph */
+}
+
+/* Styling for specific result data spans */
+#res_location,
+#res_avg_price,
+#res_sqft,
+#res_bedrooms,
+#res_bathrooms,
+#res_property_type,
+#res_year_built {
+    font-weight: 600; /* Semi-bold */
+    color: #2c3e50; /* Prominent color */
+}
+
+#results_area p small em {
+    color: #6c757d; /* Muted gray */
+    font-size: 0.875em; /* Adjusted font size */
 }
 
 #error_message {
     font-weight: bold;
+    color: #dc3545; /* A common error color */
+    margin-top: 15px;
+    padding: 10px 15px;
+    border: 1px solid #f5c6cb;
+    background-color: #f8d7da;
+    border-radius: 4px;
+    max-width: 500px; /* Consistent with filters width */
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* Loading Message Styles */
+@keyframes fadeInOut {
+  0%, 100% { opacity: 0.7; }
+  50% { opacity: 1; }
+}
+
+#loading_message {
+    color: #007bff; /* Modern blue color */
+    font-size: 1.1em; /* Slightly larger font */
+    font-style: italic; /* Italicized text */
+    margin-top: 20px; /* Adjusted spacing */
+    text-align: center; /* Center the loading text */
+    /* The display property will be controlled by JavaScript (e.g., display: block or display: none) */
+    animation: fadeInOut 1.5s infinite ease-in-out;
+    max-width: 500px; /* Consistent with filters width */
+    margin-left: auto;
+    margin-right: auto;
 }
