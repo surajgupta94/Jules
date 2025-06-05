@@ -3,7 +3,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const loadingMessageDiv = document.getElementById('loading_message'); // New
 
     // Filter inputs
-    const locationInput = document.getElementById('location');
+    const postcodeNnput = document.getElementById('postcode'); // Changed from locationInput
     const propertyTypeSelect = document.getElementById('property_type');
     const minPriceInput = document.getElementById('min_price');
     const maxPriceInput = document.getElementById('max_price');
@@ -23,18 +23,18 @@ document.addEventListener('DOMContentLoaded', () => {
         resultAvgPriceSpan.textContent = 'N/A';
         resultDataPeriodSpan.textContent = 'N/A';
 
-        const location = locationInput.value.trim();
+        const postcode = postcodeNnput.value.trim(); // Changed from location
         const propertyType = propertyTypeSelect.value;
         const minPrice = minPriceInput.value;
         const maxPrice = maxPriceInput.value;
 
-        if (!location) {
-            errorMessageDiv.textContent = 'Location is required.';
+        if (!postcode) { // Changed from location
+            errorMessageDiv.textContent = 'Postcode is required.'; // Changed message
             return;
         }
 
         const params = new URLSearchParams();
-        params.append('location', location);
+        params.append('postcode', postcode); // Changed from location to postcode
         params.append('property_type', propertyType);
 
         if (minPrice) {
@@ -55,7 +55,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!response.ok) {
                 errorMessageDiv.textContent = data.error || `Error: ${response.status} ${response.statusText}`;
             } else {
-                resultLocationSpan.textContent = data.location || 'N/A';
+                resultLocationSpan.textContent = data.postcode || 'N/A'; // Changed from data.location to data.postcode
                 resultPropertyTypeSpan.textContent = data.property_type || 'N/A';
                 resultAvgPriceSpan.textContent = data.average_price ? `£${data.average_price.toLocaleString()}` : 'N/A';
                 resultDataPeriodSpan.textContent = data.data_period || 'N/A';
