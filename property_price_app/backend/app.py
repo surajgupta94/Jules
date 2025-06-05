@@ -2,6 +2,7 @@ from flask import Flask, jsonify, request, render_template
 import requests # We'll need this later
 import csv
 import io
+import sys
 
 app = Flask(__name__, template_folder='templates', static_folder='../frontend')
 
@@ -97,6 +98,7 @@ def get_average_price():
                     "data_period": data_period
                 }), 500
         else:
+            print(f"DEBUG: Requested column '{requested_col_name}' not found. Available columns: {list(data_row.keys())}", file=sys.stderr)
             return jsonify({
                 "error": f"Data column '{requested_col_name}' not found in API response.",
                 "available_columns": list(data_row.keys()) if data_row else [],

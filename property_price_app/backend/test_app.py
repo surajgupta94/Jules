@@ -2,7 +2,7 @@ import unittest
 from unittest.mock import patch, MagicMock
 import json
 import requests # For requests.exceptions
-from backend.app import app # Import the Flask app instance
+from property_price_app.backend.app import app # Import the Flask app instance
 
 class TestApp(unittest.TestCase):
     def setUp(self):
@@ -14,7 +14,7 @@ class TestApp(unittest.TestCase):
     def tearDown(self):
         self.app_context.pop()
 
-    @patch('backend.app.requests.get')
+    @patch('property_price_app.backend.app.requests.get')
     def test_get_average_price_success_all_types(self, mock_get):
         # Mock the HMLR API response
         mock_response = MagicMock()
@@ -36,7 +36,7 @@ class TestApp(unittest.TestCase):
         self.assertEqual(data['location'], 'england')
         self.assertEqual(data['data_period'], '2023-10')
 
-    @patch('backend.app.requests.get')
+    @patch('property_price_app.backend.app.requests.get')
     def test_get_average_price_success_detached(self, mock_get):
         mock_response = MagicMock()
         mock_response.status_code = 200
@@ -54,7 +54,7 @@ class TestApp(unittest.TestCase):
         self.assertEqual(data['average_price'], 500000)
         self.assertEqual(data['property_type'], 'detached')
 
-    @patch('backend.app.requests.get')
+    @patch('property_price_app.backend.app.requests.get')
     def test_get_average_price_api_not_found(self, mock_get):
         mock_response = MagicMock()
         mock_response.status_code = 404
@@ -66,7 +66,7 @@ class TestApp(unittest.TestCase):
         data = json.loads(response.data)
         self.assertIn('Data not found for location', data['error'])
 
-    @patch('backend.app.requests.get')
+    @patch('property_price_app.backend.app.requests.get')
     def test_get_average_price_api_timeout(self, mock_get):
         mock_get.side_effect = requests.exceptions.Timeout("API timed out")
 
@@ -87,7 +87,7 @@ class TestApp(unittest.TestCase):
         data = json.loads(response.data)
         self.assertEqual(data['error'], 'Invalid property type specified: invalidtype')
 
-    @patch('backend.app.requests.get')
+    @patch('property_price_app.backend.app.requests.get')
     def test_get_average_price_missing_column(self, mock_get):
         mock_response = MagicMock()
         mock_response.status_code = 200
@@ -105,7 +105,7 @@ class TestApp(unittest.TestCase):
         data = json.loads(response.data)
         self.assertIn("Data column 'AveragePriceDetached' not found", data['error'])
 
-    @patch('backend.app.requests.get')
+    @patch('property_price_app.backend.app.requests.get')
     def test_get_average_price_unparseable_price(self, mock_get):
         mock_response = MagicMock()
         mock_response.status_code = 200
@@ -122,7 +122,7 @@ class TestApp(unittest.TestCase):
         data = json.loads(response.data)
         self.assertIn("Could not parse price value 'NotAPrice'", data['error'])
 
-    @patch('backend.app.requests.get')
+    @patch('property_price_app.backend.app.requests.get')
     def test_get_average_price_empty_csv(self, mock_get):
         mock_response = MagicMock()
         mock_response.status_code = 200
@@ -136,7 +136,7 @@ class TestApp(unittest.TestCase):
         data = json.loads(response.data)
         self.assertIn("No data rows found", data['error'])
 
-    @patch('backend.app.requests.get')
+    @patch('property_price_app.backend.app.requests.get')
     def test_get_average_price_headers_only_csv(self, mock_get):
         mock_response = MagicMock()
         mock_response.status_code = 200
@@ -149,6 +149,48 @@ class TestApp(unittest.TestCase):
         self.assertEqual(response.status_code, 404)
         data = json.loads(response.data)
         self.assertIn("No data rows found", data['error'])
+
+    @patch('property_price_app.backend.app.requests.get')
+    def test_get_average_price_missing_actual_average_price_column(self, mock_get):
+        mock_response = MagicMock()
+        mock_response.status_code = 200
+        # CSV missing 'AveragePrice' but has others
+        csv_content = (
+            "Period,RegionName,AveragePriceDetached,IndexDetached\n"
+            "2023-10,TestRegion,500000,155.0\n"
+        )
+        mock_response.text = csv_content
+        mock_response.raise_for_status = MagicMock()
+        mock_get.return_value = mock_response
+
+        response = self.client.get('/api/average_price?location=testregion&property_type=all')
+        self.assertEqual(response.status_code, 404)
+        data = json.loads(response.data)
+        self.assertIn("Data column 'AveragePrice' not found", data['error'])
+        self.assertIn("available_columns", data) # Check that available columns are listed
+        self.assertIn("AveragePriceDetached", data["available_columns"])
+
+
+    @patch('property_price_app.backend.app.requests.get')
+    def test_get_average_price_missing_specific_property_type_column(self, mock_get):
+        mock_response = MagicMock()
+        mock_response.status_code = 200
+        # CSV has 'AveragePrice' but missing 'AveragePriceDetached'
+        csv_content = (
+            "Period,RegionName,AveragePrice,AveragePriceTerraced\n"
+            "2023-10,TestRegion,300000,220000\n"
+        )
+        mock_response.text = csv_content
+        mock_response.raise_for_status = MagicMock()
+        mock_get.return_value = mock_response
+
+        response = self.client.get('/api/average_price?location=testregion&property_type=detached')
+        self.assertEqual(response.status_code, 404)
+        data = json.loads(response.data)
+        self.assertIn("Data column 'AveragePriceDetached' not found", data['error'])
+        self.assertIn("available_columns", data)
+        self.assertIn("AveragePrice", data["available_columns"])
+        self.assertIn("AveragePriceTerraced", data["available_columns"])
 
 if __name__ == '__main__':
     unittest.main()
